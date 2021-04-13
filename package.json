@@ -1,0 +1,10 @@
+{
+  "name": "@teqfw/email",
+  "version": "0.1.0",
+  "description": "Basic email functionality for TeqFW apps.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "license": "AGPL-3.0-only",
+  "dependencies": {}
+}

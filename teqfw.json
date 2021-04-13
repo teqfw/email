@@ -1,0 +1,6 @@
+{
+  "autoload": {
+    "ns": "TeqFw_Email",
+    "path": "./src"
+  }
+}
