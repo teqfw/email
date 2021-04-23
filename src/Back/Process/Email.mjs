@@ -61,7 +61,7 @@ function Factory(spec) {
     // MAIN FUNCTIONALITY
     try {
         // get config for SMTP transport
-        /** @type {TeqFw_Email_Api_Config} */
+        /** @type {TeqFw_Email_Api_Shared_Config} */
         const cfg = config?.local?.email;
         // create reusable transporter object using the default SMTP transport
         transporter = nodemailer.createTransport(cfg);
