@@ -19,11 +19,11 @@ const NS = 'TeqFw_Email_Back_Process_Email';
  */
 function Factory(spec) {
     /** @type {TeqFw_Email_Defaults} */
-    const DEF = spec['TeqFw_Email_Defaults$']; // instance singleton
+    const DEF = spec['TeqFw_Email_Defaults$']; // singleton
     /** @type {TeqFw_Core_App_Logger} */
-    const logger = spec['TeqFw_Core_App_Logger$']; // instance singleton
+    const logger = spec['TeqFw_Core_App_Logger$']; // singleton
     /** @type {TeqFw_Core_App_Front_Data_Config} */
-    const config = spec[DEF.MOD_CORE.DI_CONFIG]; // named singleton
+    const config = spec[DEF.MOD_CORE.DI_CONFIG]; // singleton
 
     // PARSE INPUT & DEFINE WORKING VARS
     let transporter, fromDef;
