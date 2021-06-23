@@ -1,6 +1,6 @@
 /**
  * Configuration for the plugin (email).
- * @see TeqFw_Core_App_Back_Config
+ * @see TeqFw_Core_Back_Config
  *
  * @namespace TeqFw_Email_Api_Shared_Config
  */

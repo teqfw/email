@@ -18,12 +18,11 @@ const NS = 'TeqFw_Email_Back_Process_Email';
  * @memberOf TeqFw_Email_Back_Process_Email
  */
 function Factory(spec) {
-    /** @type {TeqFw_Email_Defaults} */
-    const DEF = spec['TeqFw_Email_Defaults$']; // singleton
-    /** @type {TeqFw_Core_App_Logger} */
-    const logger = spec['TeqFw_Core_App_Logger$']; // singleton
-    /** @type {TeqFw_Core_App_Front_Data_Config} */
-    const config = spec[DEF.MOD_CORE.DI_CONFIG]; // singleton
+    /** @type {TeqFw_Core_Logger} */
+    const logger = spec['TeqFw_Core_Logger$']; // singleton
+    /** @type {TeqFw_Core_Back_Config} */
+    const config = spec['TeqFw_Core_Back_Config$']; // singleton
+
 
     // PARSE INPUT & DEFINE WORKING VARS
     let transporter, fromDef;
@@ -62,7 +61,7 @@ function Factory(spec) {
     try {
         // get config for SMTP transport
         /** @type {TeqFw_Email_Api_Shared_Config} */
-        const cfg = config?.local?.email;
+        const cfg = config.get()?.local?.email;
         // create reusable transporter object using the default SMTP transport
         transporter = nodemailer.createTransport(cfg);
         // setup default from name

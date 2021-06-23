@@ -9,14 +9,14 @@ class TeqFw_Email_Defaults {
     DI_OBJ = 'pluginObject';
 
     // DEF-objects of the dependencies.
-    /** @type {TeqFw_Core_App_Defaults} */
+    /** @type {TeqFw_Core_Defaults} */
     MOD_CORE;
 
     // SERVICES ROUTES
 
 
     constructor(spec) {
-        this.MOD_CORE = spec['TeqFw_Core_App_Defaults$']; // singleton
+        this.MOD_CORE = spec['TeqFw_Core_Defaults$']; // singleton
         Object.freeze(this);
     }
 }
