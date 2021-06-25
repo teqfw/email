@@ -7,7 +7,7 @@
   },
   "license": "AGPL-3.0-only",
   "dependencies": {
-    "@teqfw/core-app": "github:teqfw/core-app",
+    "@teqfw/core": "github:teqfw/core",
     "nodemailer": "*"
   }
 }
