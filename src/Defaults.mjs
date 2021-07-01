@@ -16,7 +16,7 @@ class TeqFw_Email_Defaults {
 
 
     constructor(spec) {
-        this.MOD_CORE = spec['TeqFw_Core_Defaults$']; // singleton
+        // this.MOD_CORE = spec['TeqFw_Core_Defaults$']; // singleton
         Object.freeze(this);
     }
 }
