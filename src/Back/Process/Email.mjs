@@ -18,11 +18,14 @@ const NS = 'TeqFw_Email_Back_Process_Email';
  * @memberOf TeqFw_Email_Back_Process_Email
  */
 function Factory(spec) {
+    /** @type {TeqFw_Email_Back_Defaults} */
+    const DEF = spec['TeqFw_Email_Back_Defaults$'];
     /** @type {TeqFw_Core_Logger} */
-    const logger = spec['TeqFw_Core_Logger$']; // singleton
+    const logger = spec['TeqFw_Core_Logger$'];
     /** @type {TeqFw_Core_Back_Config} */
-    const config = spec['TeqFw_Core_Back_Config$']; // singleton
-
+    const config = spec['TeqFw_Core_Back_Config$'];
+    /** @type {TeqFw_Email_Back_Api_Dto_Plugin_Desc.Factory} */
+    const fDesc = spec['TeqFw_Email_Back_Api_Dto_Plugin_Desc#Factory$'];
 
     // PARSE INPUT & DEFINE WORKING VARS
     let transporter, fromDef;
@@ -60,8 +63,9 @@ function Factory(spec) {
     // MAIN FUNCTIONALITY
     try {
         // get config for SMTP transport
-        /** @type {TeqFw_Email_Api_Shared_Config} */
-        const cfg = config.get()?.local?.email;
+        const data = config.get()?.local?.[DEF.DESC_NODE];
+        /** @type {TeqFw_Email_Back_Api_Dto_Plugin_Desc} */
+        const cfg = fDesc.create(data);
         // create reusable transporter object using the default SMTP transport
         transporter = nodemailer.createTransport(cfg);
         // setup default from name
@@ -76,5 +80,5 @@ function Factory(spec) {
 }
 
 // MODULE'S EXPORT
-Object.defineProperty(Factory, 'name', {value: `${NS}.${Factory.constructor.name}`});
+Object.defineProperty(Factory, 'name', {value: `${NS}.${Factory.name}`});
 export default Factory;
