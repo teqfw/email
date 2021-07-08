@@ -1,6 +1,8 @@
 {
-  "autoload": {
-    "ns": "TeqFw_Email",
-    "path": "./src"
+  "di": {
+    "autoload": {
+      "ns": "TeqFw_Email",
+      "path": "./src"
+    }
   }
 }

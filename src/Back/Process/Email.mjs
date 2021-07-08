@@ -13,7 +13,7 @@ const NS = 'TeqFw_Email_Back_Process_Email';
 /**
  * Factory to setup execution context and to create the processor.
  *
- * @param {TeqFw_Di_SpecProxy} spec
+ * @param {TeqFw_Di_Shared_SpecProxy} spec
  * @constructs TeqFw_Email_Back_Process_Email.process
  * @memberOf TeqFw_Email_Back_Process_Email
  */
