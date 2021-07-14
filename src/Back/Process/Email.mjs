@@ -24,8 +24,6 @@ function Factory(spec) {
     const logger = spec['TeqFw_Core_Shared_Logger$'];
     /** @type {TeqFw_Core_Back_Config} */
     const config = spec['TeqFw_Core_Back_Config$'];
-    /** @type {TeqFw_Email_Back_Api_Dto_Plugin_Desc.Factory} */
-    const fDesc = spec['TeqFw_Email_Back_Api_Dto_Plugin_Desc#Factory$'];
 
     // PARSE INPUT & DEFINE WORKING VARS
     let transporter, fromDef;
@@ -63,9 +61,8 @@ function Factory(spec) {
     // MAIN FUNCTIONALITY
     try {
         // get config for SMTP transport
-        const data = config.get()?.local?.[DEF.DESC_NODE];
         /** @type {TeqFw_Email_Back_Api_Dto_Plugin_Desc} */
-        const cfg = fDesc.create(data);
+        const cfg = config.getLocal(DEF.DESC_NODE);
         // create reusable transporter object using the default SMTP transport
         transporter = nodemailer.createTransport(cfg);
         // setup default from name
