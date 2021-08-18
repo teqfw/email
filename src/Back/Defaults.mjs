@@ -3,7 +3,7 @@
  */
 export default class TeqFw_Email_Back_Defaults {
 
-    DESC_NODE = 'email';
+    NAME = '@teqfw/email';
 
     constructor() {
         Object.freeze(this);

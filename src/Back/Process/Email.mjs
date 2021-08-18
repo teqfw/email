@@ -62,7 +62,7 @@ function Factory(spec) {
     try {
         // get config for SMTP transport
         /** @type {TeqFw_Email_Back_Api_Dto_Plugin_Desc} */
-        const cfg = config.getLocal(DEF.DESC_NODE);
+        const cfg = config.getLocal(DEF.NAME);
         // create reusable transporter object using the default SMTP transport
         transporter = nodemailer.createTransport(cfg);
         // setup default from name
