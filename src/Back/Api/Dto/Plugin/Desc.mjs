@@ -31,9 +31,7 @@ TeqFw_Email_Back_Api_Dto_Plugin_Desc.SECURE = 'secure';
  */
 export class Factory {
     constructor(spec) {
-        // EXTRACT DEPS
-        /** @type {typeof TeqFw_Email_Back_Api_Dto_Plugin_Desc_Auth} */
-        const DAuth = spec['TeqFw_Email_Back_Api_Dto_Plugin_Desc_Auth#'];
+        const {castBoolean, castInt, castString} = spec['TeqFw_Core_Shared_Util_Cast'];
         /** @type {TeqFw_Email_Back_Api_Dto_Plugin_Desc_Auth.Factory} */
         const fAuth = spec['TeqFw_Email_Back_Api_Dto_Plugin_Desc_Auth#Factory$'];
 
@@ -43,11 +41,11 @@ export class Factory {
          */
         this.create = function (data = null) {
             const res = new TeqFw_Email_Back_Api_Dto_Plugin_Desc();
-            res.auth = (data?.auth instanceof DAuth) ? data.auth : fAuth.create(data?.auth);
-            res.from = data?.from;
-            res.host = data?.host;
-            res.port = data?.port;
-            res.secure = data?.secure;
+            res.auth = fAuth.create(data?.auth);
+            res.from = castString(data?.from);
+            res.host = castString(data?.host);
+            res.port = castInt(data?.port);
+            res.secure = castBoolean(data?.secure);
             return res;
         }
     }

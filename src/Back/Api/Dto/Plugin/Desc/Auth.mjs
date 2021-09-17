@@ -22,15 +22,16 @@ TeqFw_Email_Back_Api_Dto_Plugin_Desc_Auth.USER = 'user';
  * @memberOf TeqFw_Email_Back_Api_Dto_Plugin_Desc_Auth
  */
 export class Factory {
-    constructor() {
+    constructor(spec) {
+        const {castString} = spec['TeqFw_Core_Shared_Util_Cast'];
         /**
          * @param {TeqFw_Email_Back_Api_Dto_Plugin_Desc_Auth|null} data
          * @return {TeqFw_Email_Back_Api_Dto_Plugin_Desc_Auth}
          */
         this.create = function (data = null) {
             const res = new TeqFw_Email_Back_Api_Dto_Plugin_Desc_Auth();
-            res.pass = data?.pass;
-            res.user = data?.user;
+            res.pass = castString(data?.pass);
+            res.user = castString(data?.user);
             return res;
         }
     }
