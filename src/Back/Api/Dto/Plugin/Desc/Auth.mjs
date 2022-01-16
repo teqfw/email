@@ -22,6 +22,8 @@ TeqFw_Email_Back_Api_Dto_Plugin_Desc_Auth.USER = 'user';
  * @memberOf TeqFw_Email_Back_Api_Dto_Plugin_Desc_Auth
  */
 export class Factory {
+    static namespace = NS;
+
     constructor(spec) {
         const {castString} = spec['TeqFw_Core_Shared_Util_Cast'];
         /**
@@ -39,4 +41,3 @@ export class Factory {
 
 // freeze DTO class to deny attributes changes and pin namespace
 Object.freeze(TeqFw_Email_Back_Api_Dto_Plugin_Desc_Auth);
-Object.defineProperty(Factory, 'name', {value: `${NS}.${Factory.constructor.name}`});

@@ -30,6 +30,8 @@ TeqFw_Email_Back_Api_Dto_Plugin_Desc.SECURE = 'secure';
  * @memberOf TeqFw_Email_Back_Api_Dto_Plugin_Desc
  */
 export class Factory {
+    static namespace = NS;
+
     constructor(spec) {
         const {castBoolean, castInt, castString} = spec['TeqFw_Core_Shared_Util_Cast'];
         /** @type {TeqFw_Email_Back_Api_Dto_Plugin_Desc_Auth.Factory} */
@@ -53,4 +55,3 @@ export class Factory {
 
 // freeze DTO class to deny attributes changes and pin namespace
 Object.freeze(TeqFw_Email_Back_Api_Dto_Plugin_Desc);
-Object.defineProperty(Factory, 'name', {value: `${NS}.${Factory.constructor.name}`});
