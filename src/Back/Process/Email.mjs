@@ -20,8 +20,8 @@ const NS = 'TeqFw_Email_Back_Process_Email';
 function Factory(spec) {
     /** @type {TeqFw_Email_Back_Defaults} */
     const DEF = spec['TeqFw_Email_Back_Defaults$'];
-    /** @type {TeqFw_Core_Shared_Logger} */
-    const logger = spec['TeqFw_Core_Shared_Logger$'];
+    /** @type {TeqFw_Core_Shared_Api_ILogger} */
+    const logger = spec['TeqFw_Core_Shared_Api_ILogger$'];
     /** @type {TeqFw_Core_Back_Config} */
     const config = spec['TeqFw_Core_Back_Config$'];
 
