@@ -28,7 +28,7 @@ function Factory(spec) {
     // PARSE INPUT & DEFINE WORKING VARS
     let transporter, fromDef;
 
-    // DEFINE INNER FUNCTIONS
+    // ENCLOSED FUNCS
     /**
      * Send email.
      * @param {String} [from]
@@ -58,7 +58,7 @@ function Factory(spec) {
         return result;
     }
 
-    // MAIN FUNCTIONALITY
+    // MAIN
     try {
         // get config for SMTP transport
         /** @type {TeqFw_Email_Back_Api_Dto_Plugin_Desc} */
