@@ -28,7 +28,7 @@ function Factory(spec) {
     // PARSE INPUT & DEFINE WORKING VARS
     let transporter, fromDef;
 
-    // ENCLOSED FUNCS
+    // FUNCS
     /**
      * Send email.
      * @param {String} [from]
