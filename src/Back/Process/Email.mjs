@@ -72,10 +72,10 @@ function Factory(spec) {
     }
 
     // COMPOSE RESULT
-    Object.defineProperty(process, 'name', {value: `${NS}.${process.name}`});
+    Object.defineProperty(process, 'namespace', {value: NS});
     return process;
 }
 
 // MODULE'S EXPORT
-Object.defineProperty(Factory, 'name', {value: `${NS}.${Factory.name}`});
+Object.defineProperty(Factory, 'namespace', {value: NS});
 export default Factory;
