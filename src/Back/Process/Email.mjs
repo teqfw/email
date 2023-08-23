@@ -17,14 +17,17 @@ const NS = 'TeqFw_Email_Back_Process_Email';
  * @constructs TeqFw_Email_Back_Process_Email.process
  * @memberOf TeqFw_Email_Back_Process_Email
  */
-function Factory(spec) {
-    /** @type {TeqFw_Email_Back_Defaults} */
-    const DEF = spec['TeqFw_Email_Back_Defaults$'];
-    /** @type {TeqFw_Core_Shared_Api_Logger} */
-    const logger = spec['TeqFw_Core_Shared_Api_Logger$$']; // instance
-    /** @type {TeqFw_Core_Back_Config} */
-    const config = spec['TeqFw_Core_Back_Config$'];
-
+/**
+ * @param {TeqFw_Email_Back_Defaults} DEF
+ * @param {TeqFw_Core_Shared_Api_Logger} logger -  instance
+ * @param {TeqFw_Core_Back_Config} config
+ */
+function Factory(
+    {
+        TeqFw_Email_Back_Defaults$: DEF,
+        TeqFw_Core_Shared_Api_Logger$$: logger,
+        TeqFw_Core_Back_Config$: config,
+    }) {
     // PARSE INPUT & DEFINE WORKING VARS
     let transporter, fromDef;
 

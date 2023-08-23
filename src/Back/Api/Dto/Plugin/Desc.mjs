@@ -32,11 +32,20 @@ TeqFw_Email_Back_Api_Dto_Plugin_Desc.SECURE = 'secure';
 export class Factory {
     static namespace = NS;
 
-    constructor(spec) {
-        const {castBoolean, castInt, castString} = spec['TeqFw_Core_Shared_Util_Cast'];
-        /** @type {TeqFw_Email_Back_Api_Dto_Plugin_Desc_Auth.Factory} */
-        const fAuth = spec['TeqFw_Email_Back_Api_Dto_Plugin_Desc_Auth#Factory$'];
-
+    /**
+     * @param {TeqFw_Core_Shared_Util_Cast.castBoolean|function} castBoolean
+     * @param {TeqFw_Core_Shared_Util_Cast.castInt|function} castInt
+     * @param {TeqFw_Core_Shared_Util_Cast.castString|function} castString
+     * @param {TeqFw_Email_Back_Api_Dto_Plugin_Desc_Auth.Factory} fAuth
+     */
+    constructor(
+        {
+            'TeqFw_Core_Shared_Util_Cast.castBoolean': castBoolean,
+            'TeqFw_Core_Shared_Util_Cast.castInt': castInt,
+            'TeqFw_Core_Shared_Util_Cast.castString': castString,
+            'TeqFw_Email_Back_Api_Dto_Plugin_Desc_Auth.Factory$': fAuth,
+        }
+    ) {
         /**
          * @param {TeqFw_Email_Back_Api_Dto_Plugin_Desc|null|Object} data
          * @return {TeqFw_Email_Back_Api_Dto_Plugin_Desc}

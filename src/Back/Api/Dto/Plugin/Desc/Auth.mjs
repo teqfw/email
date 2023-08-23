@@ -24,8 +24,14 @@ TeqFw_Email_Back_Api_Dto_Plugin_Desc_Auth.USER = 'user';
 export class Factory {
     static namespace = NS;
 
-    constructor(spec) {
-        const {castString} = spec['TeqFw_Core_Shared_Util_Cast'];
+    /**
+     * @param {TeqFw_Core_Shared_Util_Cast.castString|function} castString
+     */
+    constructor(
+        {
+            'TeqFw_Core_Shared_Util_Cast.castString': castString,
+        }
+    ) {
         /**
          * @param {TeqFw_Email_Back_Api_Dto_Plugin_Desc_Auth|null} data
          * @return {TeqFw_Email_Back_Api_Dto_Plugin_Desc_Auth}
@@ -35,7 +41,7 @@ export class Factory {
             res.pass = castString(data?.pass);
             res.user = castString(data?.user);
             return res;
-        }
+        };
     }
 }
 
