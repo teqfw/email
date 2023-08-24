@@ -1,13 +1,13 @@
 {
   "name": "@teqfw/email",
-  "version": "0.1.0",
+  "version": "0.20.0",
   "description": "Basic email functionality for TeqFW apps.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@teqfw/core": "github:teqfw/core",
-    "nodemailer": "*"
+    "@teqfw/core": "latest",
+    "nodemailer": "latest"
   }
 }
