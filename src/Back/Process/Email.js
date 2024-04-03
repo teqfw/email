@@ -11,7 +11,7 @@ const NS = 'TeqFw_Email_Back_Process_Email';
 
 // MODULE'S FUNCTIONS
 /**
- * Factory to setup execution context and to create the processor.
+ * Factory to se tup execution context and to create the processor.
  *
  * @param {TeqFw_Di_Shared_SpecProxy} spec
  * @constructs TeqFw_Email_Back_Process_Email.process
@@ -64,7 +64,7 @@ function Factory(
     // MAIN
     try {
         // get config for SMTP transport
-        /** @type {TeqFw_Email_Back_Api_Dto_Plugin_Desc} */
+        /** @type {TeqFw_Email_Back_Plugin_Dto_Config_Local.Dto} */
         const cfg = config.getLocal(DEF.NAME);
         // create reusable transporter object using the default SMTP transport
         transporter = nodemailer.createTransport(cfg);
