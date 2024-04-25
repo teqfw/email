@@ -1,6 +1,11 @@
 # @teqfw/email: releases
 
+## 0.22.0
+
+* Remove the `TeqFw_Email_Back_Process_Email` module.
+
 ## 0.21.0
+
 * Add the `TeqFw_Email_Back_Act_Send` action.
 * Improve the local config DTOs.
 * Change the `*.mjs` extensions to the `*.js`.
