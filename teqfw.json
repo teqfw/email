@@ -2,8 +2,7 @@
   "@teqfw/di": {
     "autoload": {
       "ns": "TeqFw_Email",
-      "path": "./src",
-      "ext": "js"
+      "path": "./src"
     }
   }
 }
