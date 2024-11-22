@@ -9,6 +9,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@teqfw/core": "latest",
+    "@teqfw/test": "latest",
     "nodemailer": "latest"
   }
 }
