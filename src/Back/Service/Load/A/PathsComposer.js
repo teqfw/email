@@ -71,6 +71,10 @@ export default class TeqFw_Email_Back_Service_Load_A_PathsComposer {
             const pathPluginLanguage = join(rootPlugin, langPlugin.toLowerCase(), templateName);
             res.push(pathPluginLanguage);
 
+            // Add paths based on the default language of the plugin used in tests
+            const pathPluginTest = join(rootApp, langPlugin.toLowerCase(), templateName);
+            res.push(pathPluginTest);
+
             return res;
         };
     }
