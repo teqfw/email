@@ -4,11 +4,11 @@ import {access, readFile} from 'node:fs/promises';
  * Enumeration of possible result codes for email loading operations.
  * @memberof TeqFw_Email_Back_Service_Load
  */
-const ResultCodes = {
+const RESULT_CODES = {
     SUCCESS: 'SUCCESS',
     UNKNOWN_ERROR: 'UNKNOWN_ERROR',
 };
-Object.freeze(ResultCodes);
+Object.freeze(RESULT_CODES);
 
 /**
  * This class handles loading and rendering email templates with dynamic data.
@@ -112,7 +112,7 @@ export default class TeqFw_Email_Back_Service_Load {
             }
         ) {
             // VARS
-            let resultCode = ResultCodes.UNKNOWN_ERROR;
+            let resultCode = RESULT_CODES.UNKNOWN_ERROR;
             let subject, text, html;
 
             // MAIN
@@ -143,7 +143,7 @@ export default class TeqFw_Email_Back_Service_Load {
                         logger.error(`TXT template not found at '${path}/body.txt'.`);
                     }
 
-                    resultCode = ResultCodes.SUCCESS;
+                    resultCode = RESULT_CODES.SUCCESS;
                     logger.info(`Template loaded successfully: '${templateName}' at '${path}'.`);
                 } else {
                     logger.error(`Cannot find an email template for package "${pkg}", template "${templateName}", and locale "${locale}".`);
@@ -157,8 +157,8 @@ export default class TeqFw_Email_Back_Service_Load {
 
         /**
          * Returns the result codes enumeration.
-         * @return {typeof TeqFw_Email_Back_Service_Load.ResultCodes}
+         * @return {typeof TeqFw_Email_Back_Service_Load.RESULT_CODES}
          */
-        this.getResultCodes = () => ResultCodes;
+        this.getResultCodes = () => RESULT_CODES;
     }
 }
