@@ -24,25 +24,42 @@ export default class TeqFw_Email_Back_Service_Load_A_PathsComposer {
 
             // Normalize the package name to use the correct path separators for the platform
             const normalizedPkg = pkg.replace(/\//g, sep);
+            const lang = locale.split('-')[0];
+            const langDef = localeDef.split('-')[0];
+            const langPlugin = localePlugin.split('-')[0];
 
-            const rootApp = join(config.getPathToRoot(), 'etc', 'email');
+            const rootApp = join(config.getPathToRoot(), 'tmpl', 'email');
             const rootPlugin = join(config.getPathToRoot(), 'node_modules', normalizedPkg, 'etc', 'email');
 
             // Add paths based on the desired locale at the application level
+            const pathAppUserLocale = join(rootApp, locale.toLowerCase(), templateName);
+            res.push(pathAppUserLocale);
+
+            // Add paths based on the desired language at the application level
+            const pathAppUserLanguage = join(rootApp, lang.toLowerCase(), templateName);
+            res.push(pathAppUserLanguage);
+
+            // Add paths based on the default locale at the application level
+            const pathAppDefaultLocale = join(rootApp, localeDef.toLowerCase(), templateName);
+            res.push(pathAppDefaultLocale);
+
+            // Add paths based on the default language at the application level
+            const pathAppDefaultLanguage = join(rootApp, langDef.toLowerCase(), templateName);
+            res.push(pathAppDefaultLanguage);
+
+            // Add paths based on the desired locale at the application level with plugin name
             const pathUserLocale = join(rootApp, locale.toLowerCase(), normalizedPkg, templateName);
             res.push(pathUserLocale);
 
-            // Add paths based on the desired language at the application level
-            const lang = locale.split('-')[0];
+            // Add paths based on the desired language at the application level with plugin name
             const pathUserLanguage = join(rootApp, lang.toLowerCase(), normalizedPkg, templateName);
             res.push(pathUserLanguage);
 
-            // Add paths based on the default locale at the application level
+            // Add paths based on the default locale at the application level with plugin name
             const pathDefaultLocale = join(rootApp, localeDef.toLowerCase(), normalizedPkg, templateName);
             res.push(pathDefaultLocale);
 
-            // Add paths based on the default language at the application level
-            const langDef = localeDef.split('-')[0];
+            // Add paths based on the default language at the application level with plugin name
             const pathDefaultLanguage = join(rootApp, langDef.toLowerCase(), normalizedPkg, templateName);
             res.push(pathDefaultLanguage);
 
@@ -67,7 +84,7 @@ export default class TeqFw_Email_Back_Service_Load_A_PathsComposer {
             res.push(pathPluginLocale);
 
             // Add paths based on the default language of the plugin
-            const langPlugin = localePlugin.split('-')[0];
+
             const pathPluginLanguage = join(rootPlugin, langPlugin.toLowerCase(), templateName);
             res.push(pathPluginLanguage);
 
