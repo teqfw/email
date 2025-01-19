@@ -1,15 +1,30 @@
 {
   "name": "@teqfw/email",
-  "version": "0.23.0",
+  "version": "0.24.0",
   "type": "module",
-  "description": "Basic email functionality for TeqFW apps.",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "description": "Email functionality for Tequila Framework (TeqFW) applications.",
   "license": "Apache-2.0",
+  "author": "Alex Gusev <alex@teqfw.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/teqfw/email.git"
+  },
+  "bugs": {
+    "url": "https://github.com/teqfw/email/issues"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "keywords": [
+    "email",
+    "TeqFW",
+    "Tequila Framework",
+    "JavaScript",
+    "template"
+  ],
   "dependencies": {
-    "@teqfw/core": "latest",
-    "@teqfw/test": "latest",
-    "nodemailer": "latest"
+    "@teqfw/core": "^0.32.0",
+    "@teqfw/test": "^0.23.0",
+    "nodemailer": "^6.9.16"
   }
 }

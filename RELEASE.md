@@ -1,5 +1,10 @@
 # @teqfw/email: releases
 
+## 0.24.0 - Change structure of template  folders hierarchy
+
+- Change structure of template folders hierarchy.
+- Enhance locale-based template path handling.
+
 ## 0.23.0 - Template Management and Email Sending Enhancements
 
 * Added dynamic template loading and rendering service (`TeqFw_Email_Back_Service_Load`).
