@@ -76,13 +76,13 @@ export default class TeqFw_Email_Back_Service_Load {
 
         /**
          * Replaces variables in the template with their corresponding values.
-         * Variables in the template should be in the format {{variableName}}.
+         * Variables in the template can be in the format {{variableName}} or {{ variableName }}.
          * @param {string} template - The template string with placeholders.
          * @param {object} vars - The key-value pairs for variable substitution.
          * @returns {string} The template with variables replaced by their values.
          */
         function replaceVariables(template, vars) {
-            return template.replace(/{{(\w+)}}/g, (match, varName) => {
+            return template.replace(/{{\s*(\w+)\s*}}/g, (match, varName) => {
                 return vars[varName] !== undefined ? vars[varName] : match;
             });
         }
