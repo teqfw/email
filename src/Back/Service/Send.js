@@ -35,6 +35,8 @@ export default class TeqFw_Email_Back_Service_Send {
          * @param {string} [localeDef='en-US'] - Default application language.
          * @param {string} [localePlugin='en-US'] - Plugin's default language.
          * @returns {Promise<{resultCode: string}>} Outcome and email content metadata.
+         *
+         * TODO: email service should not be cared with locales. It should use already ready templates.
          */
         this.execute = async function (
             {
