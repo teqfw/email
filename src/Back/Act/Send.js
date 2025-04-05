@@ -32,16 +32,17 @@ export default class TeqFw_Email_Back_Act_Send {
          * @param {String} subject
          * @param {String} text
          * @param {String} html
+         * @param {object} [headers]
          * @return {Promise<{success:boolean, messageId: string}>}
          */
-        this.act = async function ({from, to, subject, text, html}) {
+        this.act = async function ({from, to, subject, text, html, headers}) {
             let success = false;
             /** @type {string} */
             let messageId;
             try {
                 from = from ?? _fromDef;
                 // send mail with defined transport object
-                const info = await _transporter.sendMail({from, to, subject, text, html});
+                const info = await _transporter.sendMail({from, to, subject, text, html, headers});
                 if (info.messageId) {
                     messageId = info.messageId;
                     success = true;

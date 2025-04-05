@@ -34,6 +34,7 @@ export default class TeqFw_Email_Back_Service_Send {
          * @param {string} [locale='en-US'] - User's preferred language.
          * @param {string} [localeDef='en-US'] - Default application language.
          * @param {string} [localePlugin='en-US'] - Plugin's default language.
+         * @param {object} [headers]
          * @returns {Promise<{resultCode: string}>} Outcome and email content metadata.
          *
          * TODO: email service should not be cared with locales. It should use already ready templates.
@@ -47,6 +48,7 @@ export default class TeqFw_Email_Back_Service_Send {
                 locale = 'en-US',
                 localeDef = 'en-US',
                 localePlugin = 'en-US',
+                headers,
             }
         ) {
             let resultCode = RESULT_CODES.UNKNOWN_ERROR;
@@ -60,6 +62,7 @@ export default class TeqFw_Email_Back_Service_Send {
                     locale,
                     localeDef,
                     localePlugin,
+                    headers,
                 });
 
                 // Attempt to send the email.
