@@ -1,5 +1,9 @@
 # @teqfw/email: releases
 
+## 0.25.0 – Email headers support
+
+- Introduced support for custom email headers.
+
 ## 0.24.0 - Change structure of template  folders hierarchy
 
 - Change structure of template folders hierarchy.
