@@ -1,5 +1,9 @@
 # @teqfw/email: releases
 
+## 0.26.0 – TODO
+
+- A new config parameter to prevent actual email sending during development.
+
 ## 0.25.0 – Email headers support
 
 - Introduced support for custom email headers.

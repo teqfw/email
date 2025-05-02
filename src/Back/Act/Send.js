@@ -22,7 +22,7 @@ export default class TeqFw_Email_Back_Act_Send {
         }
     ) {
         // VARS
-        let _transporter, _fromDef;
+        let _transporter, _fromDef, _silentMode = false;
 
         // MAIN
         /**
@@ -41,14 +41,19 @@ export default class TeqFw_Email_Back_Act_Send {
             let messageId;
             try {
                 from = from ?? _fromDef;
-                // send mail with defined transport object
-                const info = await _transporter.sendMail({from, to, subject, text, html, headers});
-                if (info.messageId) {
-                    messageId = info.messageId;
-                    success = true;
-                    const msgEmail = `Email is sent from '${from}' to '${to}' with subject '${subject}'.`;
-                    const msgId = `Message ID: ${info.messageId}.`;
-                    logger.info(`${msgEmail} ${msgId}`);
+                if (!_silentMode) {
+                    // send mail with a defined transport object
+                    const info = await _transporter.sendMail({from, to, subject, text, html, headers});
+                    if (info.messageId) {
+                        messageId = info.messageId;
+                        success = true;
+                        const msgEmail = `Email is sent from '${from}' to '${to}' with subject '${subject}'.`;
+                        const msgId = `Message ID: ${info.messageId}.`;
+                        logger.info(`${msgEmail} ${msgId}`);
+                    }
+                } else {
+                    const msg = `Email will be sent from '${from}' to '${to}' with the subject '${subject}'.`;
+                    logger.info(msg);
                 }
             } catch (e) {
                 const msg = `Cannot send email from '${from}' to '${to}' with subject '${subject}'. Error: ${e.message}`;
@@ -61,10 +66,12 @@ export default class TeqFw_Email_Back_Act_Send {
             // get config for SMTP transport
             /** @type {TeqFw_Email_Back_Plugin_Dto_Config_Local.Dto} */
             const cfg = config.getLocal(DEF.NAME);
-            // create reusable transporter object using the default SMTP transport
+            // create a reusable transporter object using the default SMTP transport
             _transporter = nodemailer.createTransport(cfg);
             // setup default from name
             _fromDef = cfg?.from ?? cfg?.auth?.user;
+            // Prevents actual email sending during development.
+            _silentMode = cfg?.silentMode ?? false;
         } catch (e) {
             logger.error(`Cannot initialize SMTP transport. Error: ${e.message}`);
         }
