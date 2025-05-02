@@ -52,6 +52,7 @@ export default class TeqFw_Email_Back_Act_Send {
                         logger.info(`${msgEmail} ${msgId}`);
                     }
                 } else {
+                    success = true;
                     const msg = `Email will be sent from '${from}' to '${to}' with the subject '${subject}'.`;
                     logger.info(msg);
                 }
