@@ -19,7 +19,7 @@ export default class PathsComposer {
          * @param {string} locale
          * @param {string} localeDef
          * @param {string} localePlugin
-         * @returns {string[]}
+         * @returns {Array<string>}
          */
         this.act = function (root, pkg, templateName, locale, localeDef, localePlugin) {
             if (typeof root !== 'string' || !isAbsolute(root) ||

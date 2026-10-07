@@ -43,7 +43,7 @@ export default class Smtp {
             }, settings.timeoutMs);
             /**
              * @param {import('node:net').Socket} current
-             * @returns A reply reader and command writer bound to the current socket.
+             * @returns {TeqFw_Email_SmtpChannel} A reply reader and command writer bound to the current socket.
              */
             const channel = function (current) {
                 let buffer = '';

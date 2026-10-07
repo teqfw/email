@@ -22,6 +22,7 @@ declare global {
         from?: string; to: string | string[]; subject: string; text?: string; html?: string;
         headers?: TeqFw_Email_Headers;
     };
+    type TeqFw_Email_OptionalString = string | undefined;
     type TeqFw_Email_PreparedInput = TeqFw_Email_MessageInput & {from: string};
     type TeqFw_Email_Reply = {code: number; lines: string[]};
     type TeqFw_Email_ResultCodes = {SUCCESS: string; UNKNOWN_ERROR: string};
@@ -29,6 +30,10 @@ declare global {
     type TeqFw_Email_Settings = {
         host: string; port: number; secure: boolean; from: string; silentMode: boolean;
         timeoutMs: number; clientName: string; auth?: {user: string; pass: string};
+    };
+    type TeqFw_Email_SmtpChannel = {
+        read: () => Promise<TeqFw_Email_Reply>;
+        command: (line: string, codes: number[]) => Promise<TeqFw_Email_Reply>;
     };
     type TeqFw_Email_TemplateInput = {
         root: string; pkg: string; templateName: string; vars?: TeqFw_Email_TemplateVars;

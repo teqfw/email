@@ -26,7 +26,7 @@ export default class Load {
         };
         /**
          * @param {string} path
-         * @returns {Promise<string | undefined>}
+         * @returns {Promise<TeqFw_Email_OptionalString>}
          */
         const read = async function (path) {
             try { return await readFile(path, 'utf8'); }
