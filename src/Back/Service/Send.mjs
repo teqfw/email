@@ -12,17 +12,26 @@ export default class Send {
      * @param {object} deps
      * @param {TeqFw_Email_Back_Service_Load} deps.load
      * @param {TeqFw_Email_Back_Act_Send} deps.send
+     * @param {TeqFw_Log_Provider} deps.logger
      */
-    constructor({load, send}) {
+    constructor({load, send, logger}) {
+        const log = logger.forSource('TeqFw_Email_Back_Service_Send');
         /**
          * @param {TeqFw_Email_TemplateSendInput} input
          * @returns {Promise<TeqFw_Email_TemplateSendResult>}
          */
         this.execute = async function (input) {
+            log.debug('Template email submission started');
             const content = await load.execute(input);
-            if (content.resultCode !== RESULT_CODES.SUCCESS || content.subject === undefined) return {resultCode: RESULT_CODES.UNKNOWN_ERROR};
+            if (content.resultCode !== RESULT_CODES.SUCCESS || content.subject === undefined) {
+                log.warn('Template email submission skipped after preparation failure');
+                return {resultCode: RESULT_CODES.UNKNOWN_ERROR};
+            }
+            log.debug('Prepared template forwarded for email submission');
             const result = await send.act({from: input.from, to: input.to, subject: content.subject,
                 text: content.text, html: content.html, headers: input.headers});
+            log.debug('Template email submission completed', {success: result.success, simulated: result.simulated === true,
+                messageId: result.messageId, code: result.error});
             return {resultCode: result.success ? RESULT_CODES.SUCCESS : RESULT_CODES.UNKNOWN_ERROR,
                 messageId: result.messageId, simulated: result.simulated};
         };
@@ -32,5 +41,5 @@ export default class Send {
 }
 
 export const __deps__ = Object.freeze({
-    default: Object.freeze({load: 'TeqFw_Email_Back_Service_Load$', send: 'TeqFw_Email_Back_Act_Send$'}),
+    default: Object.freeze({load: 'TeqFw_Email_Back_Service_Load$', send: 'TeqFw_Email_Back_Act_Send$', logger: 'TeqFw_Log_Provider$'}),
 });

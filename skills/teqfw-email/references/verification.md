@@ -10,6 +10,8 @@ Before reporting successful integration:
   a real Container. Verify the host's cfg Source load completes first.
 - Exercise typed settings conversion and invalid/missing key handling without
   exposing values. Check explicit APP mapping when the host uses that namespace.
+- Verify host Policy enables debug/trace for email sources when diagnosing
+  process details; keep sensitive fields absent at every level.
 - Run a consumer compiler check including the package's ambient types.
 - Use simulation for network-free content validation; inspect simulated results
   separately from actual SMTP acceptance.

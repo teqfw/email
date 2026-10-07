@@ -2,13 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {EventEmitter} from 'node:events';
 import Smtp from '../../../../src/Back/Transport/Smtp.mjs';
-import {settings} from '../../../helpers/fakes.mjs';
+import {settings, captureLogs} from '../../../helpers/fakes.mjs';
 
 const message = {from: 'sender@example.test', to: ['a@example.test', 'b@example.test'], messageId: '<id@test>', data: 'From: sender@example.test\r\n\r\n.line\r\n'};
 
 function harness(options = {}) {
     const writes = [];
     const sockets = [];
+    const {records, provider: logger} = captureLogs();
     const cfg = {...settings, ...options.settings};
     class Socket extends EventEmitter {
         destroyed = false;
@@ -49,10 +50,10 @@ function harness(options = {}) {
             return this;
         }
     }
-    const smtp = new Smtp({config: {get: () => cfg}, isIP: () => 0,
+    const smtp = new Smtp({logger, config: {get: () => cfg}, isIP: () => 0,
         connect() {return new Socket(false);},
         tlsConnect(opts) {assert.equal(opts.rejectUnauthorized, true); assert.equal(opts.minVersion, 'TLSv1.2'); return new Socket(true, Boolean(opts.socket));}});
-    return {smtp, writes, sockets};
+    return {smtp, writes, sockets, records};
 }
 
 test('STARTTLS repeats EHLO, authenticates on TLS, and dot-stuffs DATA', async () => {
@@ -95,4 +96,33 @@ test('operation deadline and malformed greetings terminate and release sockets',
     await assert.rejects(stalled.smtp.send(message), /EMAIL_SMTP_TIMEOUT/);
     assert.ok(stalled.sockets[0].destroyed);
     await assert.rejects(harness({greeting: '220-welcome\r\n250 wrong\r\n'}).smtp.send(message), /EMAIL_SMTP_INVALID_REPLY/);
+});
+
+test('SMTP diagnostics expose stages and codes without credentials or wire content', async () => {
+    for (const options of [{}, {settings: {secure: true}, login: true}]) {
+        const {smtp, records} = harness(options);
+        await smtp.send(message);
+        assert.ok(records.every(({source}) => source === 'TeqFw_Email_Back_Transport_Smtp'));
+        assert.ok(records.some(({level, message}) => level === 'debug' && message === 'SMTP authentication completed'));
+        assert.ok(records.some(({level, data}) => level === 'trace' && data.code === 250));
+        assert.ok(records.some(({data}) => data.stage === 'authentication'));
+        assert.ok(records.every(({data}) => data.messageId === message.messageId));
+        const serialized = JSON.stringify(records);
+        for (const sensitive of ['password', 'user', Buffer.from('password').toString('base64'),
+            Buffer.from('\0user\0password').toString('base64'), message.from, ...message.to, '.line', 'fixture']) {
+            assert.ok(!serialized.includes(sensitive), sensitive);
+        }
+    }
+});
+
+test('SMTP warnings distinguish unknown outcome, accepted close failure, and deadline', async () => {
+    const unknown = harness({dropDataReply: true});
+    await assert.rejects(unknown.smtp.send(message), /EMAIL_SMTP_OUTCOME_UNKNOWN/);
+    assert.ok(unknown.records.some(({level, data}) => level === 'warn' && data.stage === 'data'));
+    const accepted = harness({quitFail: true});
+    await accepted.smtp.send(message);
+    assert.ok(accepted.records.some(({level, message}) => level === 'warn' && message.includes('after message acceptance')));
+    const stalled = harness({stall: true, settings: {timeoutMs: 20}});
+    await assert.rejects(stalled.smtp.send(message), /EMAIL_SMTP_TIMEOUT/);
+    assert.ok(stalled.records.some(({level, data}) => level === 'warn' && data.stage === 'greeting'));
 });

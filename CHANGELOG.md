@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Add source-bound debug/trace process diagnostics, warning-level transport
+  anomalies, and structured timing/stage metadata without exposing credentials
+  or message content. Keep logging levels under host Policy control.
+
 ## 2.0.0
 
 - Rewrite runtime components as agent-written native ESM with explicit TeqFW DI

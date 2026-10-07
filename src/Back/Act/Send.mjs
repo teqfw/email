@@ -20,19 +20,28 @@ export default class Send {
          * @returns {Promise<TeqFw_Email_SendResult>}
          */
         this.act = async function (input) {
+            const started = Date.now();
+            let stage = 'configuration';
+            let messageId;
+            log.debug('Email submission started');
             try {
                 const settings = config.get();
+                stage = 'message';
                 const prepared = message.build({...input, from: input.from ?? settings.from});
+                messageId = prepared.messageId;
+                log.debug('Email message prepared', {messageId, recipientCount: prepared.to.length,
+                    hasText: input.text !== undefined, hasHtml: input.html !== undefined});
                 if (settings.silentMode) {
-                    log.info('Email submission simulated');
+                    log.info('Email submission simulated', {messageId, durationMs: Date.now() - started});
                     return {success: true, simulated: true, messageId: prepared.messageId};
                 }
+                stage = 'transport';
                 await smtp.send(prepared);
-                log.info('Email submission accepted', {messageId: prepared.messageId});
+                log.info('Email submission accepted', {messageId, durationMs: Date.now() - started});
                 return {success: true, messageId: prepared.messageId};
             } catch (error) {
                 const code = error instanceof Error && /^EMAIL_[A-Z0-9_]+$/.test(error.message) ? error.message : 'EMAIL_SEND_FAILED';
-                log.error('Email submission failed', {err: new Error(code)});
+                log.error('Email submission failed', {err: new Error(code), code, stage, messageId, durationMs: Date.now() - started});
                 return {success: false, error: code};
             }
         };

@@ -36,7 +36,7 @@ assuming they will be honored.
 
 A simulated result never means provider acceptance. Accepted submission never
 proves final recipient delivery. The action logs component-bound outcomes and
-message IDs, without raw replies, auth payloads, configuration, or bodies.
+message IDs, without raw replies, auth payloads, credentials, or bodies.
 
 ## Transport Policy
 
@@ -74,3 +74,38 @@ EMAIL_INVALID_CONTENT, or EMAIL_INVALID_HEADER. SMTP failures include:
 An unknown outcome may already have been accepted. Never retry it automatically;
 let application policy decide follow-up. The action suppresses raw exceptions;
 absence of a result message ID is not proof that the provider rejected delivery.
+
+## Process Diagnostics
+
+Four sources emit records: TeqFw_Email_Back_Act_Send,
+TeqFw_Email_Back_Transport_Smtp, TeqFw_Email_Back_Service_Load, and
+TeqFw_Email_Back_Service_Send. Each binds the injected log Provider once.
+
+| Level | Records |
+| --- | --- |
+| info | Confirmed acceptance or explicit simulation, with messageId and durationMs. |
+| debug | Preparation, lookup plan/selection, connection, TLS upgrade, authentication, envelope acceptance, and workflow completion. |
+| trace | One-based template candidate checks/misses, numeric SMTP reply codes with stage, DATA transmission, and resource cleanup. |
+| warn | Deadline expiry, unknown post-DATA outcome, failed QUIT after acceptance, or submission skipped after template failure. |
+| error | Action or template failure, sanitized code/err, stage, and durationMs. |
+
+messageId correlates the prepared message across action and SMTP records,
+including failed submissions after composition; it is not proof of acceptance.
+Template candidateIndex follows the documented path precedence. Transport data
+includes port, secure, timeoutMs, recipientCount, and stage; content preparation
+includes hasText/hasHtml. No sender/recipient addresses, subject, body, template
+variables, absolute lookup paths, AUTH values, or raw server reply text are logged.
+
+The default shared Policy is info. Enable diagnostics in the host composition
+root through the existing Container, for example:
+
+```js
+const policy = await container.get('TeqFw_Log_Policy$');
+policy.setRule('TeqFw_Email_*', 'debug');
+policy.setRule('TeqFw_Email_Back_Transport_Smtp', 'trace');
+```
+
+Use trace for TeqFw_Email_Back_Service_Load to inspect fallback attempts.
+setRule retains the required default rule; changes affect existing loggers.
+Email never changes host Policy. fatal is unused because individual submission
+failures do not determine host availability or process exit.

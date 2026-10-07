@@ -12,14 +12,21 @@ export default class Smtp {
      * @param {typeof import('node:net').connect} deps.connect
      * @param {typeof import('node:tls').connect} deps.tlsConnect
      * @param {typeof import('node:net').isIP} deps.isIP
+     * @param {TeqFw_Log_Provider} deps.logger
      */
-    constructor({config, connect, tlsConnect, isIP}) {
+    constructor({config, connect, tlsConnect, isIP, logger}) {
+        const log = logger.forSource('TeqFw_Email_Back_Transport_Smtp');
         /**
          * @param {TeqFw_Email_WireMessage} message
          * @returns {Promise<void>}
          */
         this.send = async function (message) {
             const settings = config.get();
+            const started = Date.now();
+            const messageId = message.messageId;
+            let stage = 'connect';
+            log.debug('SMTP submission started', {messageId, port: settings.port, secure: settings.secure,
+                timeoutMs: settings.timeoutMs, recipientCount: message.to.length});
             /** @type {import('node:net').Socket | undefined} */
             let socket;
             /** @type {(() => void) | undefined} */
@@ -30,6 +37,7 @@ export default class Smtp {
             let dataSubmitted = false;
             const timeout = setTimeout(function () {
                 timedOut = true;
+                log.warn('SMTP operation deadline exceeded', {messageId, stage, timeoutMs: settings.timeoutMs});
                 abort?.(new Error('EMAIL_SMTP_TIMEOUT'));
                 socket?.destroy(new Error('EMAIL_SMTP_TIMEOUT'));
             }, settings.timeoutMs);
@@ -88,6 +96,7 @@ export default class Smtp {
                         if (lines.length > 100) { fail(new Error('EMAIL_SMTP_REPLY_TOO_LARGE')); return; }
                         if (match[2] === ' ') {
                             const reply = {code: replyCode, lines};
+                            log.trace('SMTP reply received', {messageId, stage, code: reply.code});
                             replyCode = undefined;
                             lines = [];
                             if (pending) {
@@ -159,18 +168,27 @@ export default class Smtp {
                 socket = settings.secure ? tlsConnect(tlsOptions) : connect({host: settings.host, port: settings.port});
                 let stream = channel(socket);
                 await ready(socket, settings.secure ? 'secureConnect' : 'connect');
+                log.debug('SMTP connection established', {messageId, secure: settings.secure});
+                stage = 'greeting';
                 if ((await stream.read()).code !== 220) throw new Error('EMAIL_SMTP_INVALID_GREETING');
+                stage = 'ehlo';
                 let ehlo = await stream.command(`EHLO ${settings.clientName}`, [250]);
                 if (!settings.secure) {
                     if (!ehlo.lines.some((line) => /^STARTTLS(?:\s|$)/i.test(line))) throw new Error('EMAIL_SMTP_STARTTLS_REQUIRED');
+                    stage = 'starttls';
+                    log.debug('SMTP TLS upgrade started', {messageId});
                     await stream.command('STARTTLS', [220]);
                     detach?.();
                     socket = tlsConnect({...tlsOptions, socket});
                     stream = channel(socket);
                     await ready(socket, 'secureConnect');
+                    log.debug('SMTP TLS upgrade completed', {messageId});
+                    stage = 'ehlo';
                     ehlo = await stream.command(`EHLO ${settings.clientName}`, [250]);
                 }
                 if (settings.auth) {
+                    stage = 'authentication';
+                    log.debug('SMTP authentication started', {messageId});
                     const auth = ehlo.lines.find((line) => /^AUTH(?:\s|=)/i.test(line)) ?? '';
                     const methods = auth.replace(/^AUTH[ =]/i, '').toUpperCase().split(/\s+/);
                     if (methods.includes('PLAIN')) {
@@ -182,27 +200,39 @@ export default class Smtp {
                         await stream.command(Buffer.from(settings.auth.user).toString('base64'), [334]);
                         await stream.command(Buffer.from(settings.auth.pass).toString('base64'), [235]);
                     } else throw new Error('EMAIL_SMTP_AUTH_UNSUPPORTED');
+                    log.debug('SMTP authentication completed', {messageId});
                 }
+                stage = 'envelope';
                 await stream.command(`MAIL FROM:<${message.from}>`, [250]);
                 for (const recipient of message.to) await stream.command(`RCPT TO:<${recipient}>`, [250, 251, 252]);
+                log.debug('SMTP envelope accepted', {messageId, recipientCount: message.to.length});
+                stage = 'data';
                 await stream.command('DATA', [354]);
                 const data = message.data.replace(/\r\n|\r|\n/g, '\r\n').replace(/^\./gm, '..');
                 socket.write(data + (data.endsWith('\r\n') ? '' : '\r\n') + '.\r\n');
                 dataSubmitted = true;
+                log.trace('SMTP message transmitted; awaiting acknowledgment', {messageId});
                 const result = await stream.read();
                 if (result.code !== 250) throw new Error(`EMAIL_SMTP_REJECTED_${result.code}`);
                 dataSubmitted = false;
+                log.debug('SMTP server accepted message', {messageId, durationMs: Date.now() - started});
+                stage = 'quit';
                 // Acceptance is final; a QUIT or disconnect problem must not invite duplicate submission.
-                try { await stream.command('QUIT', [221]); } catch { /* Submission was accepted. */ }
+                try { await stream.command('QUIT', [221]); } catch {
+                    log.warn('SMTP session close failed after message acceptance', {messageId});
+                }
             } catch (error) {
                 if (dataSubmitted && !(error instanceof Error && /^EMAIL_SMTP_REJECTED_/.test(error.message))) {
+                    log.warn('SMTP submission outcome unknown; automatic retry may duplicate the message', {messageId, stage});
                     throw new Error('EMAIL_SMTP_OUTCOME_UNKNOWN');
                 }
+                log.debug('SMTP submission failed', {messageId, stage, durationMs: Date.now() - started});
                 throw error;
             } finally {
                 clearTimeout(timeout);
                 socket?.destroy();
                 detach?.();
+                log.trace('SMTP session resources released', {messageId, durationMs: Date.now() - started});
             }
         };
     }
@@ -214,5 +244,6 @@ export const __deps__ = Object.freeze({
         connect: 'node:net__connect',
         tlsConnect: 'node:tls__connect',
         isIP: 'node:net__isIP',
+        logger: 'TeqFw_Log_Provider$',
     }),
 });

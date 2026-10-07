@@ -41,22 +41,42 @@ export default class Load {
          */
         this.execute = async function (input) {
             const {root, pkg, templateName, vars = {}, locale = 'en-US', localeDef = 'en-US', localePlugin = 'en-US'} = input;
+            const started = Date.now();
+            let stage = 'paths';
+            let candidateIndex = 0;
+            log.debug('Email template preparation started');
             try {
-                for (const path of paths.act(root, pkg, templateName, locale, localeDef, localePlugin)) {
+                const candidates = paths.act(root, pkg, templateName, locale, localeDef, localePlugin);
+                log.debug('Email template lookup planned', {candidateCount: candidates.length});
+                for (const path of candidates) {
+                    candidateIndex++;
+                    stage = 'metadata';
+                    log.trace('Email template candidate checked', {candidateIndex});
                     const meta = await read(`${path}/meta.json`);
-                    if (meta === undefined) continue;
+                    if (meta === undefined) {
+                        log.trace('Email template candidate absent', {candidateIndex});
+                        continue;
+                    }
                     const parsed = JSON.parse(meta);
                     if (typeof parsed.subject !== 'string') throw new Error('EMAIL_INVALID_TEMPLATE');
+                    stage = 'content';
                     const text = await read(`${path}/body.txt`);
                     const html = await read(`${path}/body.html`);
                     if (text === undefined && html === undefined) throw new Error('EMAIL_INVALID_TEMPLATE');
-                    return {resultCode: RESULT_CODES.SUCCESS, subject: replace(parsed.subject, vars),
-                        text: text === undefined ? undefined : replace(text, vars),
-                        html: html === undefined ? undefined : replace(html, vars)};
+                    stage = 'substitution';
+                    const subject = replace(parsed.subject, vars);
+                    const renderedText = text === undefined ? undefined : replace(text, vars);
+                    const renderedHtml = html === undefined ? undefined : replace(html, vars);
+                    log.debug('Email template prepared', {candidateIndex, hasText: text !== undefined,
+                        hasHtml: html !== undefined, durationMs: Date.now() - started});
+                    return {resultCode: RESULT_CODES.SUCCESS, subject, text: renderedText, html: renderedHtml};
                 }
-                log.error('Email template not found');
-            } catch {
-                log.error('Email template preparation failed');
+                log.error('Email template not found', {code: 'EMAIL_TEMPLATE_NOT_FOUND', candidateCount: candidates.length,
+                    durationMs: Date.now() - started});
+            } catch (error) {
+                const code = error instanceof Error && /^EMAIL_[A-Z0-9_]+$/.test(error.message) ? error.message : 'EMAIL_TEMPLATE_FAILED';
+                log.error('Email template preparation failed', {err: new Error(code), code, stage, candidateIndex,
+                    durationMs: Date.now() - started});
             }
             return {resultCode: RESULT_CODES.UNKNOWN_ERROR};
         };

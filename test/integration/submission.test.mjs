@@ -9,13 +9,17 @@ import NamespaceRegistry from '@teqfw/di/node/registry/namespace';
 import {smtpServer, cert} from '../helpers/smtp-server.mjs';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
-async function composition(values, trusted = true) {
+async function composition(values, trusted = true, records) {
     const entries = await new NamespaceRegistry({fs, path, appRoot: root}).build();
     assert.ok(entries.some(({prefix}) => prefix === 'TeqFw_Email_'));
     const container = new Container({namespaces: entries.map(({prefix, dirAbs, ext}) => ({prefix, target: dirAbs, defaultExt: ext}))});
     if (trusted) {
         container.enableTestMode();
         container.register('node:tls__connect', (options) => tls.connect({...options, ca: cert}));
+    }
+    if (records) {
+        container.enableTestMode();
+        container.register('TeqFw_Log_Console_Writer$', {write(record) {records.push(record);}});
     }
     const source = await container.get('TeqFw_Cfg_Source_Object$');
     const loader = await container.get('TeqFw_Cfg_Loader$');
@@ -102,4 +106,26 @@ test('host mapping loads APP dotenv settings into the package namespace without 
     const reader = await container.get('TeqFw_Cfg_Reader$');
     assert.equal(reader.get('APP').EMAIL_TO, 'recipient@example.test');
     assert.equal(reader.get('TEQFW_EMAIL').TO, undefined);
+});
+
+test('host logging Policy controls existing email loggers at runtime', async () => {
+    const records = [];
+    const container = await composition({TEQFW_EMAIL__FROM: 'sender@example.test', TEQFW_EMAIL__SILENT_MODE: true}, true, records);
+    const action = await container.get('TeqFw_Email_Back_Act_Send$');
+    const policy = await container.get('TeqFw_Log_Policy$');
+    const input = {to: 'private-recipient@example.test', subject: 'private-subject', text: 'private-body'};
+    await action.act(input);
+    assert.deepEqual(records.map(({level}) => level), ['info']);
+    records.length = 0;
+    policy.setRules({'*': 'info', 'TeqFw_Email_*': 'debug'});
+    await action.act(input);
+    assert.ok(records.some(({level}) => level === 'debug'));
+    assert.ok(records.every(({source}) => source === 'TeqFw_Email_Back_Act_Send'));
+    const count = records.length;
+    policy.setRule('TeqFw_Email_*', 'none');
+    await action.act(input);
+    assert.equal(records.length, count);
+    for (const sensitive of ['private-recipient', 'private-subject', 'private-body']) {
+        assert.ok(!JSON.stringify(records).includes(sensitive));
+    }
 });

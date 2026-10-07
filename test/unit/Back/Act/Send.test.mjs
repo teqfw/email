@@ -10,7 +10,7 @@ function create(overrides = {}) {
         config: {get: () => settings},
         message: {build(input) {calls.push(input); return {messageId: '<id@test>', data: '', from: input.from, to: [input.to]};}},
         smtp: {async send(wire) {calls.push(wire);}},
-        logger: {forSource(source) {assert.equal(source, 'TeqFw_Email_Back_Act_Send'); return {info(...args) {logs.push(args);}, error(...args) {logs.push(args);}};}},
+        logger: {forSource(source) {assert.equal(source, 'TeqFw_Email_Back_Act_Send'); return {trace(...args) {logs.push(args);}, debug(...args) {logs.push(args);}, warn(...args) {logs.push(args);}, info(...args) {logs.push(args);}, error(...args) {logs.push(args);}};}},
         ...overrides,
     };
     return {action: new Send(dependencies), calls, logs};
@@ -38,7 +38,21 @@ test('transport/config/content errors are sanitized in outcomes and logs', async
         assert.equal(result.success, false);
         assert.equal(result.error, message.startsWith('EMAIL_') ? message : 'EMAIL_SEND_FAILED');
         assert.equal(result.messageId, undefined);
-        assert.equal(logs[0][1].err.message, result.error);
+        assert.equal(logs.find((entry) => entry[0] === 'Email submission failed')[1].err.message, result.error);
         assert.ok(!JSON.stringify(logs).includes('password'));
+    }
+});
+
+test('action diagnostics correlate preparation and acceptance without message fields', async () => {
+    const {action, logs} = create();
+    await action.act({to: 'private-recipient@test', subject: 'private-subject', text: 'private-body'});
+    const prepared = logs.find(([message]) => message === 'Email message prepared')[1];
+    const accepted = logs.find(([message]) => message === 'Email submission accepted')[1];
+    assert.equal(prepared.recipientCount, 1);
+    assert.equal(prepared.messageId, accepted.messageId);
+    assert.ok(accepted.durationMs >= 0);
+    const serialized = JSON.stringify(logs);
+    for (const privateValue of ['private-recipient', 'private-subject', 'private-body', settings.from]) {
+        assert.ok(!serialized.includes(privateValue));
     }
 });
