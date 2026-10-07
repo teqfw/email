@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "strict": true,
+    "noEmit": true,
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "target": "ES2022",
+    "skipLibCheck": true,
+    "types": [
+      "node"
+    ]
+  },
+  "include": [
+    "src/**/*.mjs",
+    "types.d.ts",
+    "node_modules/@teqfw/*/src/**/*.mjs",
+    "node_modules/@teqfw/*/types.d.ts"
+  ],
+  "exclude": [
+    "ctx",
+    "test"
+  ]
+}

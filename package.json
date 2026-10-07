@@ -1,6 +1,6 @@
 {
   "name": "@teqfw/email",
-  "version": "0.25.0",
+  "version": "2.0.0",
   "type": "module",
   "description": "Email functionality for Tequila Framework (TeqFW) applications.",
   "license": "Apache-2.0",
@@ -13,7 +13,7 @@
     "url": "https://github.com/teqfw/email/issues"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=20"
   },
   "keywords": [
     "email",
@@ -23,10 +23,45 @@
     "template"
   ],
   "dependencies": {
-    "@teqfw/core": "^0.34.1",
-    "nodemailer": "^6.10.0"
+    "@teqfw/cfg": "^2.1.0",
+    "@teqfw/di": "^2.11.0",
+    "@teqfw/log": "^2.1.2"
   },
+  "files": [
+    "skills/",
+    "src/",
+    ".env.example",
+    "CHANGELOG.md",
+    "jsconfig.json",
+    "LICENSE",
+    "README.md",
+    "types.d.ts"
+  ],
   "devDependencies": {
-    "@teqfw/test": "^0.23.0"
+    "@types/node": "^20.19.43",
+    "typescript": "^5.9.3"
+  },
+  "types": "types.d.ts",
+  "exports": {
+    ".": {
+      "types": "./types.d.ts"
+    }
+  },
+  "scripts": {
+    "test": "node --test test/unit/Config.test.mjs test/unit/Back/*.test.mjs test/unit/Back/Act/*.test.mjs test/unit/Back/Transport/*.test.mjs test/unit/Back/Service/*.test.mjs test/unit/Back/Service/Load/A/*.test.mjs test/integration/*.test.mjs",
+    "typecheck": "tsc -p jsconfig.json"
+  },
+  "teqfw": {
+    "fw": {
+      "di": {
+        "namespaces": [
+          {
+            "prefix": "TeqFw_Email_",
+            "path": "./src",
+            "ext": ".mjs"
+          }
+        ]
+      }
+    }
   }
 }

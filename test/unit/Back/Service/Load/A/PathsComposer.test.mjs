@@ -1,45 +1,23 @@
-import {container} from '@teqfw/test';
-import assert from 'assert';
+import test from 'node:test';
+import assert from 'node:assert/strict';
 import path from 'node:path';
+import PathsComposer from '../../../../../../src/Back/Service/Load/A/PathsComposer.mjs';
 
-// GET OBJECTS FROM CONTAINER
-/** @type {TeqFw_Email_Back_Service_Load_A_PathsComposer} */
-const action = await container.get('TeqFw_Email_Back_Service_Load_A_PathsComposer$');
+const composer = new PathsComposer({join: path.join, isAbsolute: path.isAbsolute});
 
-/** @type {TeqFw_Core_Back_Config} */
-const config = await container.get('TeqFw_Core_Back_Config$');
+test('host templates precede package templates with locale and language fallback', () => {
+    const paths = composer.act('/host', '@vendor/plugin', 'Welcome', 'ru-RU', 'en-US', 'es-ES');
+    assert.deepEqual(paths.slice(0, 4), ['/host/tmpl/email/ru-ru/Welcome', '/host/tmpl/email/ru/Welcome', '/host/tmpl/email/en-us/Welcome', '/host/tmpl/email/en/Welcome']);
+    assert.equal(paths[8], '/host/node_modules/@vendor/plugin/etc/email/ru-ru/Welcome');
+    assert.equal(paths.at(-1), '/host/tmpl/email/es/Welcome');
+    assert.equal(paths.length, 15);
+});
 
-// Mock the `getPathToRoot` method
-config.getPathToRoot = () => '/path/to/root';
-
-describe('TeqFw_Email_Back_Service_Load_A_PathsComposer', () => {
-    it('should generate correct paths for given locales and package information', () => {
-        // Test data
-        const pkg = '@flancer64/gpt-user-auth';
-        const templateName = 'SignUp_Init';
-        const locale = 'ru-RU';
-        const localeDef = 'en-US';
-        const localePlugin = 'es-ES';
-
-        // Expected paths
-        const rootPath = '/path/to/root/etc/email';
-        const expectedPaths = [
-            path.join(rootPath, 'ru-ru', pkg, templateName),
-            path.join(rootPath, 'ru', pkg, templateName),
-            path.join(rootPath, 'en-us', pkg, templateName),
-            path.join(rootPath, 'en', pkg, templateName),
-            path.join(rootPath, 'node_modules', pkg, 'ru-ru', templateName),
-            path.join(rootPath, 'node_modules', pkg, 'ru', templateName),
-            path.join(rootPath, 'node_modules', pkg, 'en-us', templateName),
-            path.join(rootPath, 'node_modules', pkg, 'en', templateName),
-            path.join(rootPath, 'node_modules', pkg, 'es-es', templateName),
-            path.join(rootPath, 'node_modules', pkg, 'es', templateName),
-        ];
-
-        // Call the method
-        const paths = action.act(pkg, templateName, locale, localeDef, localePlugin);
-
-        // Assert
-        assert.deepStrictEqual(paths, expectedPaths, 'Generated paths do not match the expected ones.');
-    });
+test('duplicate paths are removed and traversal is rejected', () => {
+    const paths = composer.act('/host', 'plugin', 'Welcome', 'en', 'en', 'en');
+    assert.equal(new Set(paths).size, paths.length);
+    for (const args of [['relative', 'plugin', 'Welcome', 'en', 'en', 'en'], ['/host', '../../etc', 'Welcome', 'en', 'en', 'en'],
+        ['/host', 'plugin', '../Welcome', 'en', 'en', 'en'], ['/host', 'plugin', 'Welcome', '../en', 'en', 'en']]) {
+        assert.throws(() => composer.act(...args), /EMAIL_INVALID_TEMPLATE_PATH/);
+    }
 });
