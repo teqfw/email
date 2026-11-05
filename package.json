@@ -39,7 +39,8 @@
   ],
   "devDependencies": {
     "@types/node": "^20.19.43",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "@flancer32/skill-teqfw-esm-validator": "^0.15.2"
   },
   "types": "types.d.ts",
   "exports": {
@@ -48,8 +49,9 @@
     }
   },
   "scripts": {
-    "test": "node --test test/unit/Config.test.mjs test/unit/Back/*.test.mjs test/unit/Back/Act/*.test.mjs test/unit/Back/Transport/*.test.mjs test/unit/Back/Service/*.test.mjs test/unit/Back/Service/Load/A/*.test.mjs test/integration/*.test.mjs",
-    "typecheck": "tsc -p jsconfig.json"
+    "test": "npm run check:esm && node --test test/unit/Config.test.mjs test/unit/Back/*.test.mjs test/unit/Back/Act/*.test.mjs test/unit/Back/Transport/*.test.mjs test/unit/Back/Service/*.test.mjs test/unit/Back/Service/Load/A/*.test.mjs test/integration/*.test.mjs",
+    "typecheck": "tsc -p jsconfig.json",
+    "check:esm": "teqfw-esm-validator src --profile type-regular"
   },
   "teqfw": {
     "fw": {

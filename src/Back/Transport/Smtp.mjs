@@ -42,7 +42,7 @@ export default class Smtp {
                 socket?.destroy(new Error('EMAIL_SMTP_TIMEOUT'));
             }, settings.timeoutMs);
             /**
-             * @param {import('node:net').Socket} current
+             * @param {TeqFw_Email_SmtpSocket} current
              * @returns {TeqFw_Email_SmtpChannel} A reply reader and command writer bound to the current socket.
              */
             const channel = function (current) {
@@ -143,7 +143,7 @@ export default class Smtp {
                 };
             };
             /**
-             * @param {import('node:net').Socket} current
+             * @param {TeqFw_Email_SmtpSocket} current
              * @param {string} event
              * @returns {Promise<void>}
              */

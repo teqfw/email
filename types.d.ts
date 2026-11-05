@@ -35,6 +35,7 @@ declare global {
         read: () => Promise<TeqFw_Email_Reply>;
         command: (line: string, codes: number[]) => Promise<TeqFw_Email_Reply>;
     };
+    type TeqFw_Email_SmtpSocket = import('node:net').Socket;
     type TeqFw_Email_TemplateInput = {
         root: string; pkg: string; templateName: string; vars?: TeqFw_Email_TemplateVars;
         locale?: string; localeDef?: string; localePlugin?: string;
